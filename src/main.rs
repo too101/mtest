@@ -111,10 +111,11 @@ struct Options {
     start_test: Option<(Test, usize)>,
     show_help: bool,
     lang: Option<Lang>,
+    demo: bool,
 }
 
 fn parse_args() -> Options {
-    let mut o = Options { screenshot: None, start_test: None, show_help: false, lang: None };
+    let mut o = Options { screenshot: None, start_test: None, show_help: false, lang: None, demo: false };
     let args: Vec<String> = std::env::args().skip(1).collect();
     let mut i = 0;
     let mut alt = 0;
@@ -135,6 +136,7 @@ fn parse_args() -> Options {
                 i += 1;
             }
             "--help-popup" => o.show_help = true,
+            "--demo" => o.demo = true,
             "--lang" if i + 1 < args.len() => {
                 o.lang = Lang::from_code(&args[i + 1].to_lowercase());
                 i += 1;
@@ -197,6 +199,8 @@ struct App {
     focus_button: Option<usize>,
     /// Bitmap 152 as a texture: the glow behind the main-screen buttons.
     glow: Option<TextureHandle>,
+    /// When the sound test started, for its moving loudspeaker cursor (1008:191e).
+    sound_started: Option<Instant>,
 }
 
 impl App {
@@ -220,7 +224,11 @@ impl App {
             fullscreen: true,
             focus_button: None,
             glow: None,
+            sound_started: None,
         };
+        if opts.demo {
+            app.demo = Some((0, Instant::now()));
+        }
         if let Some((t, alt)) = opts.start_test {
             app.screen = Screen::Pattern { test: t, alt };
             if opts.show_help {
@@ -300,7 +308,9 @@ impl App {
         match b {
             Button::Test(t) => self.open_test(ctx, t, 0),
             Button::Sound => {
-                if !sound::play() {
+                if sound::play() {
+                    self.sound_started = Some(Instant::now());
+                } else {
                     self.popup = Some(Popup {
                         title: self.labels().sound.to_string(),
                         body: self.texts().sound_failed.into(),
@@ -386,6 +396,47 @@ impl App {
                 }
             } else if prev {
                 self.prev_alt();
+            }
+        }
+    }
+
+    /// The original's own cursors. During the sound test (1008:191e, 1008:2ade): if the sound
+    /// lasts 150 ms to 10 s, its length is split in three, showing the loudspeaker sounding on the
+    /// left, on both sides, then on the right, before the normal cursor returns. In demo mode the
+    /// round "Demo" badge (cursor 0x9b, 1008:2030, set-cursor handler 1008:2c4a).
+    fn draw_cursor(&mut self, ctx: &egui::Context, layer: egui::Id) {
+        let mut bits: Option<(&[&str], (i32, i32))> = None;
+        if let Some(t0) = self.sound_started {
+            let len_ms = (sound::LENGTH_SECS * 1000.0) as u64;
+            let third = (len_ms / 3).max(1);
+            let phase = t0.elapsed().as_millis() as u64 / third;
+            if (150..=10_000).contains(&len_ms) && phase < 3 {
+                bits = Some(match phase {
+                    0 => (&bitmaps::CURSOR_SOUND_LEFT[..], bitmaps::CURSOR_SOUND_LEFT_HOT),
+                    1 => (&bitmaps::CURSOR_SOUND_BOTH[..], bitmaps::CURSOR_SOUND_BOTH_HOT),
+                    _ => (&bitmaps::CURSOR_SOUND_RIGHT[..], bitmaps::CURSOR_SOUND_RIGHT_HOT),
+                });
+                ctx.request_repaint_after(Duration::from_millis(30));
+            } else {
+                self.sound_started = None;
+            }
+        }
+        if bits.is_none() && self.demo.is_some() {
+            bits = Some((&bitmaps::CURSOR_DEMO[..], bitmaps::CURSOR_DEMO_HOT));
+        }
+        let Some((rows, hot)) = bits else { return };
+        let Some(pos) = ctx.input(|i| i.pointer.hover_pos()) else { return };
+        ctx.set_cursor_icon(egui::CursorIcon::None);
+        let p = ctx.layer_painter(egui::LayerId::new(egui::Order::Tooltip, layer));
+        let origin = pos - vec2(hot.0 as f32, hot.1 as f32);
+        for (y, row) in rows.iter().enumerate() {
+            for (x, b) in row.bytes().enumerate() {
+                let col = match b {
+                    b'#' => Color32::BLACK,
+                    b'.' => Color32::WHITE,
+                    _ => continue,
+                };
+                p.rect_filled(Rect::from_min_size(origin + vec2(x as f32, y as f32), vec2(1.0, 1.0)), 0.0, col);
             }
         }
     }
@@ -873,6 +924,8 @@ impl eframe::App for App {
         }
         self.popup_window(ctx);
         self.language_dialog(ctx);
+        let cursor_layer = ui.make_persistent_id("mtest-cursor");
+        self.draw_cursor(ctx, cursor_layer);
         self.handle_screenshot(ctx);
     }
 }

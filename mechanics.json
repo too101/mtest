@@ -59,6 +59,8 @@
     {"name": "Shift+F1", "group": "controls", "value": "help contents", "source": "function 1008:2912"},
     {"name": "window", "group": "controls", "value": "full screen, no frame or title", "source": "reference picture"},
     {"name": "demo mode", "group": "controls", "value": "Ctrl+Alt+D", "source": "help topic Main screen"},
+    {"name": "sound cursor", "group": "sound", "value": "cursors 0x91, 0x8f, 0x92 for a third of the sound each", "source": "function 1008:191e"},
+    {"name": "demo cursor", "group": "controls", "value": "cursor 0x9b (Demo badge)", "source": "function 1008:2030"},
     {"name": "sound sample rate", "group": "sound", "value": 22050, "unit": "Hz", "source": "WAVE resource 142"},
     {"name": "sound length", "group": "sound", "value": 1.71, "unit": "s", "source": "WAVE resource 142"},
     {"name": "sound tone", "group": "sound", "value": 350, "unit": "Hz", "source": "WAVE resource 142 (zero crossings)"},

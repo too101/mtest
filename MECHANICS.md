@@ -134,6 +134,20 @@ Black background, white grid, then (`s = x(1) >> 4`, `half = x(1) >> 1`):
   - on the main screen Tab moves between the buttons (1008:29cf).
   Space and the arrow keys in a test are this app's additions.
 
+## Cursors
+
+- Sound test (1008:191e): the length of WAVE 142 is worked out as data bytes x 1000 / bytes per
+  second. If it is 150 to 10000 ms, a timer of length/3 starts (id 0x8af, 1008:1a3c). The cursor
+  shows cursor 0x91 (loudspeaker sounding left), then on each tick 0x8f (both sides), then 0x92 (right).
+  After the third tick the normal cursor returns (timer handler 1008:2b23-2b91). This app does the
+  same with its 1.71 s tone (570 ms per step) and the three cursor bitmaps copied bit for bit.
+- Demo mode: cursor 0x9b, a round "Demo" badge (loaded at 1008:2030 when the demo starts, set by
+  the set-cursor handler at 1008:2c4a). Done the same way here.
+- With two or more monitors (count from 1008:534c), the main screen shows the hand cursor 0x90
+  (loaded at 1008:22c8). Pressing on the card (1008:23ec) and releasing over another monitor
+  (1008:2502 -> 1008:350e) moves the window to that monitor. Not rebuilt yet: it couldn't be tried
+  here with one monitor.
+
 ## Intro picture (not rebuilt)
 
 A second window class (message map at code 1000:14e0; paint 1008:5d1c with StretchDIBits, create

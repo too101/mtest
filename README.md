@@ -7,11 +7,18 @@ program: geometry, brightness and contrast, high voltage, colours, convergence, 
 moiré, readability and jitter patterns, a left-to-right speaker test and a demo mode. Full screen,
 in 10 languages (English, Thai, Finnish, German, French, Spanish, Dutch, Swedish, Norwegian, Italian).
 
+![MTEST main screen](docs/screenshot.png)
+
+The main screen is itself a test card: grid and circles for geometry, eight colour bars, red, green
+and blue ramps, grey steps from 3 % to 100 %, and the buttons for each test.
+
 ## Use
 
 - Main screen: click a button (Tab and Enter work too). F1 for help, Alt+F4 or EXIT to quit.
 - In a test: click or Page Down for the next pattern (after the last one you return), right click or
-  Page Up for the previous one, Esc to go back.
+  Page Up for the previous one, both mouse buttons or Esc to go back.
+- The loudspeaker button plays a tone that moves from the left speaker to the right one; the mouse
+  pointer shows a loudspeaker following it.
 - Ctrl+Alt+D starts the demo (Esc stops it). Ctrl+Alt+1 to 9 narrows the window to 10-90 % of the
   screen width, Ctrl+Alt+0 makes it full screen again.
 
