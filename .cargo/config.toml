@@ -1,0 +1,3 @@
+# A full MinGW dlltool (the one shipped with Rust can't assemble import libraries without `as`).
+[target.x86_64-pc-windows-gnu]
+rustflags = ["-C", "dlltool=C:/msys64/ucrt64/bin/dlltool.exe"]
