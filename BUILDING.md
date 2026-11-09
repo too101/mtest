@@ -12,11 +12,19 @@
 macOS programs can't be linked on Windows (Apple's system frameworks are only on a Mac). They are
 built by `.github/workflows/build.yml` on GitHub: push this folder to
 https://github.com/too101/mtest and open the run's **Artifacts** for `mtest-macos-arm64` (Apple
-Silicon) and `mtest-macos-x86_64` (Intel), with Windows (32/64-bit) and Linux builds as well. Pushing a tag such
-as `v.20261109` attaches all five to a GitHub release. On a Mac, the first start may need right click →
+Silicon) and `mtest-macos-x86_64` (Intel), with Windows and Linux builds (both 32/64-bit) as well. Pushing a tag such
+as `v.20261109` attaches all six to a GitHub release. On a Mac, the first start may need right click →
 Open, because the program isn't signed.
 
 ## Building yourself
+
+GitHub Actions also builds `mtest-linux-x86` for 32-bit x86 Linux using
+`i686-unknown-linux-gnu` on Ubuntu 22.04. The workflow installs the i386
+development libraries and a multilib compiler, and selects the i386 pkg-config
+directory. The binary needs compatible 32-bit glibc, X11/Wayland and OpenGL
+libraries on the destination system; on 64-bit Linux, install those 32-bit
+runtime libraries too. Run `chmod +x mtest-linux-x86` before starting it.
+This Ubuntu 22.04 build is not guaranteed to run on older distributions.
 
 For Windows 32-bit, GitHub Actions produces `mtest-windows-x86.exe` using
 `i686-pc-windows-msvc`. This build targets Windows 10 (32-bit or 64-bit);
