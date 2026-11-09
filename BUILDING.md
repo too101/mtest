@@ -12,11 +12,21 @@
 macOS programs can't be linked on Windows (Apple's system frameworks are only on a Mac). They are
 built by `.github/workflows/build.yml` on GitHub: push this folder to
 https://github.com/too101/mtest and open the run's **Artifacts** for `mtest-macos-arm64` (Apple
-Silicon) and `mtest-macos-x86_64` (Intel), with Windows and Linux builds as well. Pushing a tag such
-as `v.20261109` attaches all four to a GitHub release. On a Mac, the first start may need right click →
+Silicon) and `mtest-macos-x86_64` (Intel), with Windows (32/64-bit) and Linux builds as well. Pushing a tag such
+as `v.20261109` attaches all five to a GitHub release. On a Mac, the first start may need right click →
 Open, because the program isn't signed.
 
 ## Building yourself
+
+For Windows 32-bit, GitHub Actions produces `mtest-windows-x86.exe` using
+`i686-pc-windows-msvc`. This build targets Windows 10 (32-bit or 64-bit);
+32-bit support does not imply support for Windows XP or Windows 7.
+To build it locally, install the Visual Studio C++ x86 build tools, then run:
+
+```powershell
+rustup target add i686-pc-windows-msvc
+cargo build --release --target i686-pc-windows-msvc
+```
 
 With Rust (https://rustup.rs): `cargo build --release`, giving `target/release/mtest`
 (`mtest.exe` on Windows).

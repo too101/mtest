@@ -1,5 +1,5 @@
-# Builds MTEST for Windows, Linux and macOS (Intel and Apple Silicon) on every push and tag.
-# The programs appear under the run's "Artifacts"; a tag like v1.2.0 also attaches them to a release.
+# Builds MTEST for Windows (32/64-bit), Linux and macOS (Intel and Apple Silicon).
+# The programs appear under the run's "Artifacts"; a tag like v.20261109 also attaches them to a release.
 name: build
 
 on:
@@ -20,6 +20,10 @@ jobs:
             target: x86_64-pc-windows-msvc
             file: mtest.exe
             name: mtest-windows-x86_64.exe
+          - os: windows-latest
+            target: i686-pc-windows-msvc
+            file: mtest.exe
+            name: mtest-windows-x86.exe
           - os: ubuntu-22.04
             target: x86_64-unknown-linux-gnu
             file: mtest
@@ -28,7 +32,7 @@ jobs:
             target: aarch64-apple-darwin
             file: mtest
             name: mtest-macos-arm64
-          - os: macos-13
+          - os: macos-15-intel
             target: x86_64-apple-darwin
             file: mtest
             name: mtest-macos-x86_64
